@@ -33,19 +33,19 @@ data "terraform_remote_state" "alb_sg" {
   }
 }
 
-# 🔹 frontend Security Group
+# 🔹 Frontend Security Group
 resource "aws_security_group" "frontend_sg" {
   name        = "${var.project}-${var.env}-frontend-sg"
-  description = "frontend Security Group"
+  description = "Frontend Security Group"
   vpc_id      = data.terraform_remote_state.vpc.outputs.vpc_id
 
-  # ✅ PORT 3000
+  # ✅ PORT 3000 (from ALB)
   ingress {
     from_port                = 3000
     to_port                  = 3000
     protocol                 = "tcp"
     source_security_group_id = data.terraform_remote_state.alb_sg.outputs.security_group_id
-
+  }
 
   # ✅ SSH
   ingress {
@@ -64,7 +64,7 @@ resource "aws_security_group" "frontend_sg" {
   }
 
   tags = {
-    Name        = "${var.project}-${var.env}-notification-sg"
+    Name        = "${var.project}-${var.env}-frontend-sg"
     Environment = var.env
     Project     = var.project
   }
