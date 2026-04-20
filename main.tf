@@ -1,37 +1,43 @@
 provider "aws" {
   region = var.aws_region
 }
-
-# 🔹 S3 Bucket for Terraform State
+ 
+# S3 Bucket for Terraform State
 resource "aws_s3_bucket" "tf_state" {
   bucket = var.bucket_name
-
+ 
   tags = {
-    Name = var.bucket_name
+    Name        = var.bucket_name
+    Environment = "dev"
+    Project     = "OTMS"
+    ManagedBy   = "Terraform"
   }
 }
-
-# 🔹 Enable Versioning (recommended)
+ 
+# Enable Versioning
 resource "aws_s3_bucket_versioning" "versioning" {
   bucket = aws_s3_bucket.tf_state.id
-
+ 
   versioning_configuration {
     status = "Enabled"
   }
 }
-
-# 🔹 DynamoDB Table for State Locking
+ 
+# DynamoDB Table for State Locking
 resource "aws_dynamodb_table" "tf_lock" {
   name         = var.dynamodb_table
   billing_mode = "PAY_PER_REQUEST"
   hash_key     = "LockID"
-
+ 
   attribute {
     name = "LockID"
     type = "S"
   }
-
+ 
   tags = {
-    Name = var.dynamodb_table
+    Name        = var.dynamodb_table
+    Environment = "dev"
+    Project     = "OTMS"
+    ManagedBy   = "Terraform"
   }
 }
