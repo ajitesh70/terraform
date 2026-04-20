@@ -1,6 +1,6 @@
 terraform {
   backend "s3" {
-    bucket         = "otms-dev-state"
+    bucket         = "otms-dev-state7864582"
     key            = "env/dev/application/otms/frontend-sg/terraform.tfstate"
     region         = "us-east-1"
     dynamodb_table = "terraform-lock"
