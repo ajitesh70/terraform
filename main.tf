@@ -1,7 +1,7 @@
 terraform {
   backend "s3" {
     bucket         = "otms-dev-state"
-    key            = "env/dev/application/otms/notification-sg/terraform.tfstate"
+    key            = "env/dev/application/otms/frontend-sg/terraform.tfstate"
     region         = "us-east-1"
     dynamodb_table = "terraform-lock"
   }
@@ -22,54 +22,30 @@ data "terraform_remote_state" "vpc" {
   }
 }
 
-# 🔹 Frontend SG Remote State (✅ CHANGE HERE)
-data "terraform_remote_state" "frontend_sg" {
+# 🔹 Get External ALB SG
+data "terraform_remote_state" "alb_sg" {
   backend = "s3"
 
   config = {
     bucket = "otms-dev-state"
-    key    = "env/dev/application/otms/frontend-sg/terraform.tfstate"
+    key    = "env/dev/application/otms/external-alb/terraform.tfstate"
     region = "us-east-1"
   }
 }
 
-# 🔹 Notification Security Group
-resource "aws_security_group" "notification_sg" {
-  name        = "${var.project}-${var.env}-notification-sg"
-  description = "Notification Security Group"
+# 🔹 frontend Security Group
+resource "aws_security_group" "frontend_sg" {
+  name        = "${var.project}-${var.env}-frontend-sg"
+  description = "frontend Security Group"
   vpc_id      = data.terraform_remote_state.vpc.outputs.vpc_id
 
-  # ✅ PORT 8080
+  # ✅ PORT 3000
   ingress {
-    from_port                = 8080
-    to_port                  = 8080
+    from_port                = 3000
+    to_port                  = 3000
     protocol                 = "tcp"
-    source_security_group_id = data.terraform_remote_state.frontend_sg.outputs.frontend_sg_id
-  }
+    source_security_group_id = data.terraform_remote_state.alb_sg.outputs.security_group_id
 
-  # ✅ PORT 8081
-  ingress {
-    from_port                = 8081
-    to_port                  = 8081
-    protocol                 = "tcp"
-    source_security_group_id = data.terraform_remote_state.frontend_sg.outputs.frontend_sg_id
-  }
-
-  # ✅ PORT 8082
-  ingress {
-    from_port                = 8082
-    to_port                  = 8082
-    protocol                 = "tcp"
-    source_security_group_id = data.terraform_remote_state.frontend_sg.outputs.frontend_sg_id
-  }
-
-  # ✅ PORT 5000
-  ingress {
-    from_port                = 5000
-    to_port                  = 5000
-    protocol                 = "tcp"
-    source_security_group_id = data.terraform_remote_state.frontend_sg.outputs.frontend_sg_id
-  }
 
   # ✅ SSH
   ingress {
