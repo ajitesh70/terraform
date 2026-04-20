@@ -1,6 +1,6 @@
 terraform {
   backend "s3" {
-    bucket         = "otms-dev-state"
+    bucket         = "otms-dev-state7864582"
     key            = "env/dev/application/otms/ec2-template/terraform.tfstate"
     region         = "us-east-1"
     dynamodb_table = "terraform-lock"
@@ -16,7 +16,7 @@ data "terraform_remote_state" "subnet" {
   backend = "s3"
 
   config = {
-    bucket = "otms-dev-state"
+    bucket = "otms-dev-state7864582"
     key    = "env/dev/application/network/subnet/terraform.tfstate"
     region = "us-east-1"
   }
@@ -27,7 +27,7 @@ data "terraform_remote_state" "alb_sg" {
   backend = "s3"
 
   config = {
-    bucket = "otms-dev-state"
+    bucket = "otms-dev-state7864582"
     key    = "env/dev/application/otms/external-alb/terraform.tfstate"
     region = "us-east-1"
   }
