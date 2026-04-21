@@ -1,19 +1,35 @@
 variable "env" {
-  default = "dev"
+  description = "Deployment environment"
+  type        = string
+  default     = "dev"
 }
-
+ 
 variable "project" {
-  default = "otms"
+  description = "Project name"
+  type        = string
+  default     = "otms"
 }
-
+ 
 variable "region" {
-  default = "us-east-1"
+  description = "AWS Region"
+  type        = string
+  default     = "us-east-1"
 }
-
+ 
 variable "ami_id" {
-  default = "ami-033bd18826652770f"
+  description = "AMI ID for Launch Template"
+  type        = string
+  default     = "ami-033bd18826652770f"
 }
-
+ 
 variable "instance_type" {
-  default = "t3.small"
+  description = "EC2 instance type"
+  type        = string
+  default     = "t3.small"
+}
+ 
+variable "key_name" {
+  description = "SSH Key Pair Name"
+  type        = string
+  default     = "otms-dev-key"
 }
