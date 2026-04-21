@@ -3,9 +3,9 @@ variable "vpc_name" {
   type        = string
   default     = "OTMS-vpc"
 }
-
+ 
 variable "public_subnet_name" {
   description = "Public Subnet Name (for NAT)"
   type        = string
-  default     = "public-subnet"
+  default     = "otms-dev-public-subnet-1a"
 }
