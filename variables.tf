@@ -1,7 +1,11 @@
 variable "vpc_name" {
-  default = "OTMS-vpc"
+  description = "VPC Name"
+  type        = string
+  default     = "OTMS-vpc"
 }
-
+ 
 variable "public_subnet_name" {
-  default = "public-subnet"
+  description = "Public subnet name prefix"
+  type        = string
+  default     = "otms-dev-public-subnet"
 }
