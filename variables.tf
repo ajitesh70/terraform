@@ -1,11 +1,17 @@
 variable "env" {
-  default = "dev"
+  description = "Deployment environment"
+  type        = string
+  default     = "dev"
 }
-
+ 
 variable "project" {
-  default = "otms"
+  description = "Project name"
+  type        = string
+  default     = "otms"
 }
-
+ 
 variable "region" {
-  default = "us-east-1"
+  description = "AWS Region"
+  type        = string
+  default     = "us-east-1"
 }
