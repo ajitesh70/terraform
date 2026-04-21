@@ -38,45 +38,16 @@ data "terraform_remote_state" "subnet" {
 }
 
 # ─────────────────────────────────────────
-# SECURITY GROUP FOR ALB
+# REMOTE STATE — EXTERNAL ALB SG
+# (Created in external-alb-sg branch)
 # ─────────────────────────────────────────
-resource "aws_security_group" "alb_sg" {
-  name        = "${var.project}-${var.env}-alb-sg"
-  description = "Security Group for External ALB — allows HTTP and HTTPS from internet"
-  vpc_id      = data.terraform_remote_state.vpc.outputs.vpc_id
+data "terraform_remote_state" "alb_sg" {
+  backend = "s3"
 
-  # Allow HTTP
-  ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-    description = "Allow HTTP from internet"
-  }
-
-  # Allow HTTPS
-  ingress {
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-    description = "Allow HTTPS from internet"
-  }
-
-  # Allow all outbound
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-    description = "Allow all outbound traffic"
-  }
-
-  tags = {
-    Name        = "${var.project}-${var.env}-alb-sg"
-    Environment = var.env
-    Project     = var.project
-    ManagedBy   = "Terraform"
+  config = {
+    bucket = "otms-dev-state7864582"
+    key    = "env/dev/application/otms/external-alb/terraform.tfstate"
+    region = "us-east-1"
   }
 }
 
@@ -84,21 +55,23 @@ resource "aws_security_group" "alb_sg" {
 # APPLICATION LOAD BALANCER (External)
 # ─────────────────────────────────────────
 resource "aws_lb" "alb" {
-  name               = "${var.project}-${var.env}-alb"
+  name               = "${var.project}-${var.env}-external-alb"
   internal           = false
   load_balancer_type = "application"
 
-  security_groups = [aws_security_group.alb_sg.id]
+  # SG fetched from external-alb-sg remote state
+  security_groups = [
+    data.terraform_remote_state.alb_sg.outputs.security_group_id
+  ]
 
-  # Placed in both public subnets (multi-AZ)
+  # Placed in both public subnets
   subnets = data.terraform_remote_state.subnet.outputs.public_subnet_ids
 
   enable_deletion_protection = false
-
-  idle_timeout = 60
+  idle_timeout               = 60
 
   tags = {
-    Name        = "${var.project}-${var.env}-alb"
+    Name        = "${var.project}-${var.env}-external-alb"
     Environment = var.env
     Project     = var.project
     ManagedBy   = "Terraform"
