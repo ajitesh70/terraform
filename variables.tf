@@ -5,7 +5,7 @@ variable "region" {
 }
 
 variable "env" {
-  description = "Deployment environment"
+  description = "Environment"
   type        = string
   default     = "dev"
 }
@@ -17,13 +17,13 @@ variable "project" {
 }
 
 variable "ami_id" {
-  description = "AMI ID for Notification EC2 instance"
+  description = "AMI ID"
   type        = string
   default     = "ami-0b73ce37f347c345b"
 }
 
 variable "instance_type" {
-  description = "EC2 instance type"
+  description = "Instance type"
   type        = string
   default     = "t3.small"
 }
