@@ -19,5 +19,5 @@ variable "project" {
 variable "domain_name" {
   description = "Primary domain name for hosted zone (e.g. otms.yourdomain.com)"
   type        = string
-  default     = "www.innovitisolutions.in"
+  default     = "innovitisolutions.in"
 }
