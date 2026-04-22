@@ -5,7 +5,7 @@ provider "aws" {
 terraform {
   backend "s3" {
     bucket         = "otms-dev-state7864582"
-    key            = "env/dev/application/otms/notification-sg/terraform.tfstate"
+    key            = "env/dev/application/otms/backend-sg/terraform.tfstate"
     region         = "us-east-1"
     dynamodb_table = "terraform-lock"
   }
@@ -26,7 +26,7 @@ data "terraform_remote_state" "vpc" {
 
 # ─────────────────────────────────────────
 # REMOTE STATE — EXTERNAL ALB SG
-# Source for inbound rule on port 5000
+# Source for all inbound rules
 # ─────────────────────────────────────────
 data "terraform_remote_state" "alb_sg" {
   backend = "s3"
@@ -39,26 +39,56 @@ data "terraform_remote_state" "alb_sg" {
 }
 
 # ─────────────────────────────────────────
-# SECURITY GROUP — Notification Service
-# Inbound  : port 5000 from External ALB SG
-# Inbound  : port 22   SSH
+# SECURITY GROUP — Backend (All 4 APIs)
+# Inbound  : port 8080 — Employee API
+# Inbound  : port 8081 — Attendance API
+# Inbound  : port 8082 — Salary API
+# Inbound  : port 5000 — Notification API
+# Inbound  : port 22   — SSH
 # Outbound : all allowed
 # ─────────────────────────────────────────
-resource "aws_security_group" "notification_sg" {
-  name        = "${var.project}-${var.env}-notification-sg"
-  description = "Security Group for Notification Service — allows port 5000 from External ALB"
+resource "aws_security_group" "backend_sg" {
+  name        = "${var.project}-${var.env}-backend-sg"
+  description = "Security Group for Backend — allows ports 8080, 8081, 8082, 5000 from External ALB"
   vpc_id      = data.terraform_remote_state.vpc.outputs.vpc_id
 
-  # Allow port 5000 from External ALB SG only
+  # Employee API — port 8080
+  ingress {
+    from_port                = 8080
+    to_port                  = 8080
+    protocol                 = "tcp"
+    source_security_group_id = data.terraform_remote_state.alb_sg.outputs.security_group_id
+    description              = "Allow Employee API traffic from External ALB on port 8080"
+  }
+
+  # Attendance API — port 8081
+  ingress {
+    from_port                = 8081
+    to_port                  = 8081
+    protocol                 = "tcp"
+    source_security_group_id = data.terraform_remote_state.alb_sg.outputs.security_group_id
+    description              = "Allow Attendance API traffic from External ALB on port 8081"
+  }
+
+  # Salary API — port 8082
+  ingress {
+    from_port                = 8082
+    to_port                  = 8082
+    protocol                 = "tcp"
+    source_security_group_id = data.terraform_remote_state.alb_sg.outputs.security_group_id
+    description              = "Allow Salary API traffic from External ALB on port 8082"
+  }
+
+  # Notification API — port 5000
   ingress {
     from_port                = 5000
     to_port                  = 5000
     protocol                 = "tcp"
     source_security_group_id = data.terraform_remote_state.alb_sg.outputs.security_group_id
-    description              = "Allow traffic from External ALB on port 5000"
+    description              = "Allow Notification API traffic from External ALB on port 5000"
   }
 
-  # Allow SSH
+  # SSH
   ingress {
     from_port   = 22
     to_port     = 22
@@ -77,7 +107,7 @@ resource "aws_security_group" "notification_sg" {
   }
 
   tags = {
-    Name        = "${var.project}-${var.env}-notification-sg"
+    Name        = "${var.project}-${var.env}-backend-sg"
     Environment = var.env
     Project     = var.project
     ManagedBy   = "Terraform"
