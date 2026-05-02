@@ -36,7 +36,7 @@ data "terraform_remote_state" "alb_sg" {
 # Frontend Security Group
 resource "aws_security_group" "frontend_sg" {
   name        = "${var.project}-${var.env}-frontend-sg"
-  description = "Frontend Security Group — allows traffic from ALB on port 3000"
+  description = "Frontend Security Group - allows traffic from ALB on port 3000"
   vpc_id      = data.terraform_remote_state.vpc.outputs.vpc_id
  
   # Allow port 3000 from ALB only
