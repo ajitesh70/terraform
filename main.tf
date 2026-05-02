@@ -11,9 +11,6 @@ terraform {
   }
 }
 
-# ─────────────────────────────────────────
-# REMOTE STATE — ASG
-# ─────────────────────────────────────────
 data "terraform_remote_state" "asg" {
   backend = "s3"
   config = {
@@ -23,33 +20,24 @@ data "terraform_remote_state" "asg" {
   }
 }
 
-# ==========================================================
-# SCALE OUT POLICY (Add 1 instance)
-# ==========================================================
 resource "aws_autoscaling_policy" "scale_out" {
-  name                   = "backend-scale-out"
+  name                   = "${var.project}-${var.env}-backend-scale-out"
   scaling_adjustment     = 1
   adjustment_type        = "ChangeInCapacity"
   cooldown               = 120
   autoscaling_group_name = data.terraform_remote_state.asg.outputs.asg_name
 }
 
-# ==========================================================
-# SCALE IN POLICY (Remove 1 instance)
-# ==========================================================
 resource "aws_autoscaling_policy" "scale_in" {
-  name                   = "backend-scale-in"
+  name                   = "${var.project}-${var.env}-backend-scale-in"
   scaling_adjustment     = -1
   adjustment_type        = "ChangeInCapacity"
   cooldown               = 120
   autoscaling_group_name = data.terraform_remote_state.asg.outputs.asg_name
 }
 
-# ==========================================================
-# CLOUDWATCH ALARM — HIGH CPU (>70%)
-# ==========================================================
 resource "aws_cloudwatch_metric_alarm" "cpu_high" {
-  alarm_name          = "backend-cpu-high"
+  alarm_name          = "${var.project}-${var.env}-backend-cpu-high"
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = 2
   metric_name         = "CPUUtilization"
@@ -62,16 +50,18 @@ resource "aws_cloudwatch_metric_alarm" "cpu_high" {
     AutoScalingGroupName = data.terraform_remote_state.asg.outputs.asg_name
   }
 
-  alarm_actions = [
-    aws_autoscaling_policy.scale_out.arn
-  ]
+  alarm_actions = [aws_autoscaling_policy.scale_out.arn]
+
+  tags = {
+    Name        = "${var.project}-${var.env}-backend-cpu-high"
+    Environment = var.env
+    Project     = var.project
+    ManagedBy   = "Terraform"
+  }
 }
 
-# ==========================================================
-# CLOUDWATCH ALARM — LOW CPU (<30%)
-# ==========================================================
 resource "aws_cloudwatch_metric_alarm" "cpu_low" {
-  alarm_name          = "backend-cpu-low"
+  alarm_name          = "${var.project}-${var.env}-backend-cpu-low"
   comparison_operator = "LessThanThreshold"
   evaluation_periods  = 2
   metric_name         = "CPUUtilization"
@@ -84,7 +74,12 @@ resource "aws_cloudwatch_metric_alarm" "cpu_low" {
     AutoScalingGroupName = data.terraform_remote_state.asg.outputs.asg_name
   }
 
-  alarm_actions = [
-    aws_autoscaling_policy.scale_in.arn
-  ]
+  alarm_actions = [aws_autoscaling_policy.scale_in.arn]
+
+  tags = {
+    Name        = "${var.project}-${var.env}-backend-cpu-low"
+    Environment = var.env
+    Project     = var.project
+    ManagedBy   = "Terraform"
+  }
 }
