@@ -39,7 +39,7 @@ data "terraform_remote_state" "tg" {
 # EMPLOYEE RULE (Priority 1)
 # ==========================================================
 resource "aws_lb_listener_rule" "employee_rule" {
-  listener_arn = data.terraform_remote_state.listener.outputs.https_listener_arn
+  listener_arn = data.terraform_remote_state.listener.outputs.http_listener_arn
   priority     = 1
 
   action {
@@ -58,7 +58,7 @@ resource "aws_lb_listener_rule" "employee_rule" {
 # ATTENDANCE RULE (Priority 2)
 # ==========================================================
 resource "aws_lb_listener_rule" "attendance_rule" {
-  listener_arn = data.terraform_remote_state.listener.outputs.https_listener_arn
+  listener_arn = data.terraform_remote_state.listener.outputs.http_listener_arn
   priority     = 2
 
   action {
@@ -77,7 +77,7 @@ resource "aws_lb_listener_rule" "attendance_rule" {
 # SALARY RULE (Priority 3)
 # ==========================================================
 resource "aws_lb_listener_rule" "salary_rule" {
-  listener_arn = data.terraform_remote_state.listener.outputs.https_listener_arn
+  listener_arn = data.terraform_remote_state.listener.outputs.http_listener_arn
   priority     = 3
 
   action {
@@ -96,7 +96,7 @@ resource "aws_lb_listener_rule" "salary_rule" {
 # NOTIFICATION RULE (Priority 4)
 # ==========================================================
 resource "aws_lb_listener_rule" "notification_rule" {
-  listener_arn = data.terraform_remote_state.listener.outputs.https_listener_arn
+  listener_arn = data.terraform_remote_state.listener.outputs.http_listener_arn
   priority     = 4
 
   action {
