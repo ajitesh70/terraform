@@ -19,7 +19,7 @@ variable "region" {
 variable "ami_id" {
   description = "AMI ID for Launch Template"
   type        = string
-  default     = "ami-033bd18826652770f"
+  default     = "ami-03f5347d027ee35a1"
 }
  
 variable "instance_type" {
