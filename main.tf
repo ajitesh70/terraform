@@ -44,7 +44,7 @@ resource "aws_security_group" "frontend_sg" {
     from_port                = 3000
     to_port                  = 3000
     protocol                 = "tcp"
-    source_security_group_id = data.terraform_remote_state.alb_sg.outputs.security_group_id
+    security_groups = [data.terraform_remote_state.alb_sg.outputs.security_group_id]
     description              = "Allow traffic from External ALB"
   }
  
