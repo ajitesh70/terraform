@@ -15,9 +15,3 @@ variable "project" {
   type        = string
   default     = "otms"
 }
-
-variable "ssl_policy" {
-  description = "SSL negotiation policy for HTTPS listener"
-  type        = string
-  default     = "ELBSecurityPolicy-2016-08"
-}

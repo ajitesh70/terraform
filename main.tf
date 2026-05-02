@@ -16,7 +16,6 @@ terraform {
 # ─────────────────────────────────────────
 data "terraform_remote_state" "alb" {
   backend = "s3"
-
   config = {
     bucket = "otms-dev-state7864582"
     key    = "env/dev/application/otms/alb/terraform.tfstate"
@@ -25,24 +24,10 @@ data "terraform_remote_state" "alb" {
 }
 
 # ─────────────────────────────────────────
-# REMOTE STATE — ACM CERTIFICATE
-# ─────────────────────────────────────────
-data "terraform_remote_state" "acm" {
-  backend = "s3"
-
-  config = {
-    bucket = "otms-dev-state7864582"
-    key    = "env/dev/application/otms/acm/terraform.tfstate"
-    region = "us-east-1"
-  }
-}
-
-# ─────────────────────────────────────────
-# REMOTE STATE — tg-frontend
+# REMOTE STATE — FRONTEND TARGET GROUP
 # ─────────────────────────────────────────
 data "terraform_remote_state" "tg_frontend" {
   backend = "s3"
-
   config = {
     bucket = "otms-dev-state7864582"
     key    = "env/dev/application/otms/target-group/terraform.tfstate"
@@ -51,16 +36,14 @@ data "terraform_remote_state" "tg_frontend" {
 }
 
 # ─────────────────────────────────────────
-# LISTENER — HTTPS:443
-# Default action → tg-frontend only
-# (Baaki rules baad mein alag branch mein)
+# LISTENER — HTTP:80
+# No ACM needed — HTTP only
+# Default action → frontend TG
 # ─────────────────────────────────────────
-resource "aws_lb_listener" "https_listener" {
+resource "aws_lb_listener" "http_listener" {
   load_balancer_arn = data.terraform_remote_state.alb.outputs.alb_arn
-  port              = 443
-  protocol          = "HTTPS"
-  ssl_policy        = var.ssl_policy
-  certificate_arn   = data.terraform_remote_state.acm.outputs.certificate_arn
+  port              = 80
+  protocol          = "HTTP"
 
   default_action {
     type             = "forward"
@@ -68,7 +51,7 @@ resource "aws_lb_listener" "https_listener" {
   }
 
   tags = {
-    Name        = "${var.project}-${var.env}-https-listener"
+    Name        = "${var.project}-${var.env}-http-listener"
     Environment = var.env
     Project     = var.project
     ManagedBy   = "Terraform"
