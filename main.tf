@@ -44,7 +44,7 @@ data "terraform_remote_state" "tg_notification" {
 # TG   : notification-tg (port 5000)
 # ─────────────────────────────────────────
 resource "aws_lb_listener_rule" "notification_rule" {
-  listener_arn = data.terraform_remote_state.listener.outputs.https_listener_arn
+  listener_arn = data.terraform_remote_state.listener.outputs.http_listener_arn
   priority     = 4
 
   condition {
