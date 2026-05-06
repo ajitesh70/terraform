@@ -49,7 +49,7 @@ data "terraform_remote_state" "alb_sg" {
 # ─────────────────────────────────────────
 resource "aws_security_group" "backend_sg" {
   name        = "${var.project}-${var.env}-backend-sg"
-  description = "Security Group for Backend — allows ports 8080, 8081, 8082, 5000 from External ALB"
+  description = "Security Group for Backend - allows ports 8080, 8081, 8082, 5000 from External ALB"
   vpc_id      = data.terraform_remote_state.vpc.outputs.vpc_id
 
   # Employee API — port 8080
