@@ -57,7 +57,7 @@ resource "aws_security_group" "backend_sg" {
     from_port                = 8080
     to_port                  = 8080
     protocol                 = "tcp"
-    source_security_group_id = data.terraform_remote_state.alb_sg.outputs.security_group_id
+    security_groups = [data.terraform_remote_state.alb_sg.outputs.security_group_id]
     description              = "Allow Employee API traffic from External ALB on port 8080"
   }
 
@@ -66,7 +66,7 @@ resource "aws_security_group" "backend_sg" {
     from_port                = 8081
     to_port                  = 8081
     protocol                 = "tcp"
-    source_security_group_id = data.terraform_remote_state.alb_sg.outputs.security_group_id
+    security_groups = [data.terraform_remote_state.alb_sg.outputs.security_group_id]
     description              = "Allow Attendance API traffic from External ALB on port 8081"
   }
 
@@ -75,7 +75,7 @@ resource "aws_security_group" "backend_sg" {
     from_port                = 8082
     to_port                  = 8082
     protocol                 = "tcp"
-    source_security_group_id = data.terraform_remote_state.alb_sg.outputs.security_group_id
+    security_groups = [data.terraform_remote_state.alb_sg.outputs.security_group_id]
     description              = "Allow Salary API traffic from External ALB on port 8082"
   }
 
@@ -84,7 +84,7 @@ resource "aws_security_group" "backend_sg" {
     from_port                = 5000
     to_port                  = 5000
     protocol                 = "tcp"
-    source_security_group_id = data.terraform_remote_state.alb_sg.outputs.security_group_id
+    security_groups = [data.terraform_remote_state.alb_sg.outputs.security_group_id]
     description              = "Allow Notification API traffic from External ALB on port 5000"
   }
 
