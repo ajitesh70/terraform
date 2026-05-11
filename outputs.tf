@@ -1,7 +1,7 @@
-output "postgres_sg_id" {
-  value = aws_security_group.postgres_sg.id
+output "postgres_instance_id" {
+  value = aws_instance.postgres_instance.id
 }
 
-output "postgres_sg_name" {
-  value = aws_security_group.postgres_sg.name
+output "postgres_private_ip" {
+  value = aws_instance.postgres_instance.private_ip
 }
