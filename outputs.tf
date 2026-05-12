@@ -1,7 +1,7 @@
-output "scylla_sg_id" {
-  value = aws_security_group.scylla_sg.id
+output "scylla_instance_id" {
+  value = aws_instance.scylla_instance.id
 }
 
-output "scylla_sg_name" {
-  value = aws_security_group.scylla_sg.name
+output "scylla_private_ip" {
+  value = aws_instance.scylla_instance.private_ip
 }
